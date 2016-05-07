@@ -2,12 +2,17 @@ package it.polito.tdp.sudoku.controller;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import javax.management.RuntimeErrorException;
+
 import it.polito.tdp.sudoku.model.SudokuGenerator;
+import it.polito.tdp.sudoku.model.SudokuSolver;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 
 public class SudokuController {
@@ -265,20 +270,52 @@ public class SudokuController {
     @FXML
     private Label lbl81;
     
+    @FXML
+    private ChoiceBox<String> boxDifficolta;
+    
     List<Label> labelList = new ArrayList<Label>(); 
+    
+    SudokuSolver ss;
+    int matrix[][];
     
     @FXML
     void doGenerate(ActionEvent event){
+    	
     	// Per generare un nuova nuova griglia di Sudoku
 		SudokuGenerator sg = new SudokuGenerator();
-		int [][] matrix = sg.nextBoard(levelExpert);
 		
-		printMatrixOnScreen(matrix);
+		
+    	String diff = boxDifficolta.getValue();
+    	
+    	try{
+	    	if(diff.compareTo("levelEasy") == 0){
+	    		//int [][] 
+	    		matrix = sg.nextBoard(levelEasy);
+	    		//sg.nextBoard(levelEasy);
+	    		printMatrixOnScreen(matrix);
+	    	} else if(diff.compareTo("levelAdvanced") == 0) {
+	    		//int [][] 
+	    		matrix = sg.nextBoard(levelAdvanced);
+	    		//sg.nextBoard(levelAdvanced);
+	    		printMatrixOnScreen(matrix);
+	    	} else if(diff.compareTo("levelExpert") == 0){
+	    		//int [][] 
+	    		matrix = sg.nextBoard(levelExpert);
+	    		//sg.nextBoard(levelExpert);
+	    		printMatrixOnScreen(matrix);
+	    	} 
+	    } catch (NullPointerException e){
+	    	System.out.println("Difficolta non scelta");
+	    }
+    	
     }
     
     @FXML
     void doSolve(ActionEvent event){
     	
+    	int[][] temp = new int[9][9];
+    	temp = ss.recursive(matrix, 0);
+    	printMatrixOnScreen(temp);
     }
     
     @FXML
@@ -364,6 +401,7 @@ public class SudokuController {
         assert lbl79 != null : "fx:id=\"lbl79\" was not injected: check your FXML file 'Sudoku.fxml'.";
         assert lbl80 != null : "fx:id=\"lbl80\" was not injected: check your FXML file 'Sudoku.fxml'.";
         assert lbl81 != null : "fx:id=\"lbl81\" was not injected: check your FXML file 'Sudoku.fxml'.";
+        assert boxDifficolta != null: "fx:id=\"boxDifficolta\" was not injected: check your FXML file 'Sudoku.fxml'.";
         
         labelList.add(lbl1);
         labelList.add(lbl2);
@@ -446,6 +484,12 @@ public class SudokuController {
         labelList.add(lbl79);
         labelList.add(lbl80);
         labelList.add(lbl81);
+        
+        boxDifficolta.getItems().add("levelEasy");
+        boxDifficolta.getItems().add("levelAdvanced");
+        boxDifficolta.getItems().add("levelExpert");
+        
+        ss = new SudokuSolver();
     }
     
     
